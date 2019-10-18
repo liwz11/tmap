@@ -98,7 +98,7 @@ def read_jsonfile(filepath):
             print(len(data))
         return json.loads(data)
     except Exception as e:
-    	print(str(e))
+        print(str(e))
         return None
 
 
@@ -162,7 +162,7 @@ if __name__ == '__main__':
 	print('read file - ip2latlon.json [start]')
 	ip2latlon = read_jsonfile('./data/ip2latlon.json')
 	print('read file - ip2latlon.json [finish]')
-        print(ip2latlon['255.255.240.0'])
+	print(ip2latlon['255.255.240.0'])
 
 	try:
 		sniffer_thread = threading.Thread(target=http_sniffer, args=())
