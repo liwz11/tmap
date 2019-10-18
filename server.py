@@ -120,11 +120,15 @@ def get_ip(packet):
 	global ip2latlon
 
 	# {"lat":"", "lon":"", "ip":"", "key":""}
-	src_obj = ip2latlon[src_ip_1]
+	src_obj = dict()
+	src_obj['lat'] = ip2latlon[src_ip_1][u'x']
+	src_obj['lon'] = ip2latlon[src_ip_1][u'y']
 	src_obj['ip'] = src_ip
 	src_obj['key'] = 'src'
 
-	dst_obj = ip2latlon[dst_ip_1]
+	dst_obj = dict()
+	dst_obj['lat'] = ip2latlon[dst_ip_1][u'x']
+	dst_obj['lon'] = ip2latlon[dst_ip_1][u'y']
 	dst_obj['ip'] = dst_ip
 	dst_obj['key'] = 'dst'
 
