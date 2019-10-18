@@ -99,6 +99,7 @@ def read_jsonfile(filepath):
             data = f.read()
         return json.loads(data)
     except Exception as e:
+    	print(str(e))
         return None
 
 
