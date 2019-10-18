@@ -14,6 +14,7 @@ traffic_list = []
 max_size = 5000
 cur_idx = -1
 
+sniff_iface = 'eth0'
 tmap_addr = '127.0.0.1'
 tmap_port = 8888
 
@@ -148,16 +149,19 @@ def get_ip(packet):
 
 
 def http_sniffer():
-	sniff(iface='ens33', prn=get_ip, lfilter=lambda p: "GET " in str(p), filter="tcp")
+	global sniff_iface
+	sniff(iface=sniff_iface, prn=get_ip, lfilter=lambda p: "GET " in str(p), filter="tcp")
 
 
 if __name__ == '__main__':
 	parser = ArgumentParser(description='tmap')
 	parser.add_argument('--addr', default='127.0.0.1', help='the tmap server addr')
 	parser.add_argument('--port', default=8888, type=int, help='the tmap server port')
+	parser.add_argument('--iface', default='eth0', help='the sniff interface')
 	args = parser.parse_args()
 	tmap_addr = args.addr
 	tmap_port = args.port
+	sniff_iface = args.iface
 	
 	ip2latlon = read_jsonfile('./data/ip2latlon.json')
 
