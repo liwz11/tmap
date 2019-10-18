@@ -107,6 +107,7 @@ def get_ip(packet):
 	src_ip = packet[IP].src
 	dst_ip = packet[IP].dst
 	headers = '\n'.join(packet.sprintf("{Raw:%Raw.load%}").split(r'\r\n\r\n')[0].split(r"\r\n"))
+	print(src_ip, '-->', dst_ip)
 
 	global ip2latlon
 
