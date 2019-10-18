@@ -95,7 +95,6 @@ def read_jsonfile(filepath):
     try:
         with open(filepath, 'r') as f:
             data = f.read()
-            print(len(data))
         return json.loads(data)
     except Exception as e:
         print(str(e))
@@ -116,7 +115,7 @@ def get_ip(packet):
 
 	global ip2latlon
 
-	# {"country_code":"", "city":"", "lat":"", "lon":"", "ip":"", "key":""}
+	# {"lat":"", "lon":"", "ip":"", "key":""}
 	src_obj = ip2latlon[src_ip_1]
 	src_obj['ip'] = src_ip
 	src_obj['key'] = 'src'
