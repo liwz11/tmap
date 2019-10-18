@@ -9,12 +9,10 @@ from scapy.all import *
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from argparse import ArgumentParser
 
-ip2latlon = {}
+
 traffic_list = []
 max_size = 5000
 cur_idx = -1
-
-sniff_iface = 'eth0'
 
 
 class MyHandler(BaseHTTPRequestHandler):
@@ -145,11 +143,8 @@ def get_ip(packet):
 
 
 def http_sniffer():
-	global ip2latlon
+	print('sniff http - GET [start]')
 	global sniff_iface
-
-	ip2latlon = read_jsonfile('./data/ip2latlon.json')
-
 	sniff(iface=sniff_iface, prn=get_ip, lfilter=lambda p: "GET " in str(p), filter="tcp")
 
 
@@ -163,12 +158,16 @@ if __name__ == '__main__':
 	tmap_port = args.port
 	sniff_iface = args.iface
 
+	print('read file - ip2latlon.json [start]')
+	ip2latlon = read_jsonfile('./data/ip2latlon.json')
+	print('read file - ip2latlon.json [finish]')
+
 	try:
 		sniffer_thread = threading.Thread(target=http_sniffer, args=())
 		sniffer_thread.start()
 
 		server = HTTPServer((tmap_addr, tmap_port), MyHandler)
-		print('start httpserver on %s:%d' %(tmap_addr, tmap_port))
+		print('httpserver on %s:%d' %(tmap_addr, tmap_port), '[start]')
 		server.serve_forever()
 	except Exception as e:
 		server.socket.close()
