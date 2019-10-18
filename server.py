@@ -108,7 +108,6 @@ def get_ip(packet):
 	src_ip = packet[IP].src
 	dst_ip = packet[IP].dst
 	headers = '\n'.join(packet.sprintf("{Raw:%Raw.load%}").split(r'\r\n\r\n')[0].split(r"\r\n"))
-	print(src_ip, '-->', dst_ip)
 
 	global ip2latlon
 
@@ -116,6 +115,7 @@ def get_ip(packet):
 	v2 = int(socket.inet_aton(dst_ip).encode('hex'), 16) & (0xFFFFFFFF << (32 - 20))
 	src_ip_1 = socket.inet_ntoa(struct.pack("!I", v1))
 	dst_ip_1 = socket.inet_ntoa(struct.pack("!I", v2))
+	print(src_ip, src_ip_1, '-->', dst_ip, dst_ip_1)
 
 	# {"country_code":"", "city":"", "lat":"", "lon":"", "ip":"", "key":""}
 	src_obj = ip2latlon[src_ip_1]
