@@ -15,8 +15,6 @@ max_size = 5000
 cur_idx = -1
 
 sniff_iface = 'eth0'
-tmap_addr = '127.0.0.1'
-tmap_port = 8888
 
 
 class MyHandler(BaseHTTPRequestHandler):
@@ -79,13 +77,9 @@ class MyHandler(BaseHTTPRequestHandler):
 				self.send_response(200)
 				self.send_header('Content-Type', content_type)
 				self.end_headers()
-
-				global tmap_addr
-				global tmap_port
-
 				js_text = f.read()
-				js_text = js_text.replace('[TMAP_ADDR]', tmap_addr)
-				js_text = js_text.replace('[TMAP_PORT]', tmap_port)
+				js_text = js_text.replace('[TMAP_ADDR]', self.server.server_name)
+				js_text = js_text.replace('[TMAP_PORT]', str(self.server.server_port))
 				self.wfile.write(js_text)
 				f.close()
 			else:
