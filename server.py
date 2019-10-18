@@ -109,13 +109,13 @@ def get_ip(packet):
 	dst_ip = packet[IP].dst
 	headers = '\n'.join(packet.sprintf("{Raw:%Raw.load%}").split(r'\r\n\r\n')[0].split(r"\r\n"))
 
-	global ip2latlon
-
 	v1 = int(socket.inet_aton(src_ip).encode('hex'), 16) & (0xFFFFFFFF << (32 - 20))
 	v2 = int(socket.inet_aton(dst_ip).encode('hex'), 16) & (0xFFFFFFFF << (32 - 20))
 	src_ip_1 = socket.inet_ntoa(struct.pack("!I", v1))
 	dst_ip_1 = socket.inet_ntoa(struct.pack("!I", v2))
 	print(src_ip, src_ip_1, '-->', dst_ip, dst_ip_1)
+
+	global ip2latlon
 
 	# {"country_code":"", "city":"", "lat":"", "lon":"", "ip":"", "key":""}
 	src_obj = ip2latlon[src_ip_1]
@@ -145,7 +145,11 @@ def get_ip(packet):
 
 
 def http_sniffer():
+	global ip2latlon
 	global sniff_iface
+
+	ip2latlon = read_jsonfile('./data/ip2latlon.json')
+
 	sniff(iface=sniff_iface, prn=get_ip, lfilter=lambda p: "GET " in str(p), filter="tcp")
 
 
@@ -158,8 +162,6 @@ if __name__ == '__main__':
 	tmap_addr = args.addr
 	tmap_port = args.port
 	sniff_iface = args.iface
-	
-	ip2latlon = read_jsonfile('./data/ip2latlon.json')
 
 	try:
 		sniffer_thread = threading.Thread(target=http_sniffer, args=())
