@@ -11,7 +11,7 @@ from argparse import ArgumentParser
 
 
 traffic_list = []
-max_size = 5000
+max_size = 2000
 cur_idx = -1
 
 
@@ -171,7 +171,7 @@ if __name__ == '__main__':
 	parser.add_argument('--addr', default='127.0.0.1', help='the tmap server addr')
 	parser.add_argument('--port', default=8888, type=int, help='the tmap server port')
 	parser.add_argument('--iface', default='eth0', help='the sniff interface')
-	parser.add_argument('--interval', default=1, type=int, help='the interval to get traffic_list')
+	parser.add_argument('--interval', default=2, type=int, help='the interval to get traffic_list')
 	args = parser.parse_args()
 	tmap_domain = args.domain
 	tmap_addr = args.addr
