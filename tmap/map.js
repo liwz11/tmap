@@ -213,6 +213,7 @@ function show_traffic(traffic) {
     var circle = svg.selectAll("circle")
         .data([(traffic.src.ip == target_ip ? traffic.dst : traffic.src)], d => d.key)
         .enter().append("circle")
+        .attr("id", traffic.time)
         .attr("class", "circle")
         .attr("r", radius)
         .attr("stroke", colors[traffic.color_idx])
