@@ -211,8 +211,8 @@ function show_traffic(traffic) {
     //console.log(traffic.src)
     
     var circle = svg.selectAll("circle")
-        .data([(traffic.src.ip == target_ip ? traffic.dst : traffic.src)], d => d.key)
         .enter().append("circle")
+        .data([(traffic.src.ip == target_ip ? traffic.dst : traffic.src)], d => d.key)
         .attr("id", traffic.time)
         .attr("class", "circle")
         .attr("r", radius)
