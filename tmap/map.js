@@ -248,13 +248,11 @@ setInterval(function() {
 
                 var t0 = traffic_list[0]['time'];
                 for(var i = 0; i < traffic_list.length; i++) {
-                    var traffic = traffic_list[i];
-                    var t1 = traffic['time'];
-                    
-                    setTimeout(function() {
+                    var t1 = traffic_list[i]['time'];
+                    setTimeout((function(traffic) {
                         console.log(traffic);
                         show_traffic(traffic);
-                    }, t1 - t0);
+                    })(traffic_list[i]), t1 - t0);
                 }
             }
         }
