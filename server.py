@@ -95,11 +95,28 @@ class MyHandler(BaseHTTPRequestHandler):
 			self.send_error(404, 'File Not Found: %s' % self.path)
 
 
+# 字典极其消耗内存
 def read_jsonfile(filepath):
     try:
         with open(filepath, 'r') as f:
             data = f.read()
         return json.loads(data)
+    except Exception as e:
+        print(str(e))
+        return None
+
+
+def get_json_obj(filepath, key):
+    try:
+        p = os.popen("cat " + filepath + " | grep '\"" + key + "\"'")
+        res = p.read()
+
+        for i in range(0, len(res)):
+            if res[i] == '{':
+                start = i
+            if res[i] == '}':
+                end = i
+        return json.loads(res[start:end+1])
     except Exception as e:
         print(str(e))
         return None
@@ -118,6 +135,7 @@ def get_ip(packet):
 	print(src_ip, src_ip_1, '-->', dst_ip, dst_ip_1)
 	print(headers.split('\n')[0])
 
+	'''
 	global ip2latlon
 
 	# {"lat":"", "lon":"", "ip":"", "key":""}
@@ -130,6 +148,16 @@ def get_ip(packet):
 	dst_obj = dict()
 	dst_obj['lat'] = ip2latlon[dst_ip_1][u'x']
 	dst_obj['lon'] = ip2latlon[dst_ip_1][u'y']
+	dst_obj['ip'] = dst_ip
+	dst_obj['key'] = 'dst'
+	'''
+
+	# {"city":"", "country_code":"", lat":"", "lon":"", "ip":"", "key":""}
+	src_obj = get_json_obj('./data/ip2latlon.json', src_ip_1)
+	src_obj['ip'] = src_ip
+	src_obj['key'] = 'src'
+
+	dst_obj = get_json_obj('./data/ip2latlon.json', dst_ip_1)
 	dst_obj['ip'] = dst_ip
 	dst_obj['key'] = 'dst'
 
@@ -167,10 +195,13 @@ if __name__ == '__main__':
 	tmap_port = args.port
 	sniff_iface = args.iface
 
+	# 字典极其消耗内存
+	'''
 	print('read file - ip2latlon.json [start]')
 	ip2latlon = read_jsonfile('./data/ip2latlon.json')
 	print('read file - ip2latlon.json [finish]')
 	print(ip2latlon['255.255.240.0'])
+	'''
 
 	try:
 		sniffer_thread = threading.Thread(target=http_sniffer, args=())
