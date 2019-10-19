@@ -251,6 +251,8 @@ setInterval(function() {
                 for(i = 0; i < traffic_list.length; i++) {
                     t1 = traffic_list[i]['time'];
                     setTimeout(function() {
+                        console.log(traffic_list[0]);
+                        console.log(traffic_list[i]);
                         show_traffic(traffic_list[i]);
                     }, t1-t0);
                 }
