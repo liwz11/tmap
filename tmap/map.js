@@ -240,7 +240,7 @@ setInterval(function() {
     xmlhttp.onreadystatechange = function () {
         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var res = xmlhttp.responseText;
-            console.log(res);
+            //console.log(res);
 
             var traffic_list = JSON.parse(res);
             if(traffic_list.length > 0) {
@@ -250,7 +250,7 @@ setInterval(function() {
                 for(var i = 0; i < traffic_list.length; i++) {
                     var t1 = traffic_list[i]['time'];
                     setTimeout((function(traffic) {
-                        console.log(traffic);
+                        console.log(traffic.dst);
                         show_traffic(traffic);
                     })(traffic_list[i]), t1 - t0);
                 }
