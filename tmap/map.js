@@ -253,7 +253,7 @@ setInterval(function() {
                 for(var i = 0; i < traffic_list.length; i++) {
                     var t1 = traffic_list[i]['time'];
                     setTimeout((function(traffic) {
-                        console.log(traffic.dst);
+                        //console.log(traffic.dst);
                         show_traffic(traffic);
                     })(traffic_list[i]), t1 - t0);
                 }

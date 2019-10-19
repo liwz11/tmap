@@ -138,8 +138,8 @@ def get_ip(packet):
 		src_ip_1 = socket.inet_ntoa(struct.pack("!I", ip_int))
 		src_obj = get_json_obj('./data/ip2latlon.json', src_ip_1)
 		src_obj['ip'] = src_ip
-		src_obj['key'] = 'src-' + str(t)
-		print(src_obj)
+		src_obj['key'] = 'src-' + str(t) # 这里的key非常重要，一定要保证都不一样
+		#print(src_obj)
 
 		traffic = { "desc": 'http GET request', "level": 0, "color_idx": 1, "time": t, "dst": src_obj, "src": dst_obj }
 
