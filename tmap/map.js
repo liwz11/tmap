@@ -232,29 +232,29 @@ function show_traffic(traffic) {
         .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 }
 
-t = 0
+var t = 0
 setInterval(function() {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", "http://[TMAP_DOMAIN]:[TMAP_PORT]/get_traffic?t=" + t, true);
     xmlhttp.send(null);
     xmlhttp.onreadystatechange = function () {
         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            res = xmlhttp.responseText;
+            var res = xmlhttp.responseText;
             console.log(res);
 
             var traffic_list = JSON.parse(res);
             if(traffic_list.length > 0) {
                 t = traffic_list[traffic_list.length - 1]['time'];
 
-                t0 = traffic_list[0]['time'];
-                var i = 0;
-                for(i = 0; i < traffic_list.length; i++) {
-                    t1 = traffic_list[i]['time'];
+                var t0 = traffic_list[0]['time'];
+                for(var i = 0; i < traffic_list.length; i++) {
+                    var traffic = traffic_list[i];
+                    var t1 = traffic['time'];
+                    
                     setTimeout(function() {
-                        console.log(traffic_list[0]);
-                        console.log(traffic_list[i]);
-                        show_traffic(traffic_list[i]);
-                    }, t1-t0);
+                        console.log(traffic);
+                        show_traffic(traffic);
+                    }, t1 - t0);
                 }
             }
         }
