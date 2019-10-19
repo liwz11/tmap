@@ -11,7 +11,7 @@ var scale = 1;
 var translate = [0, 0];
 var mouse_pressed = false;
 
-var target_ip = "[TMAP_ADDR]";//"202.112.51.43";
+var target_ip = "[TMAP_ADDR]";
 
 var colors = [
     '#00CD00', // target
@@ -235,7 +235,7 @@ function show_traffic(traffic) {
 t = 0
 setInterval(function() {
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET", "http://[TMAP_ADDR]:[TMAP_PORT]/get_traffic?t=" + t, true);
+    xmlhttp.open("GET", "http://[TMAP_DOMAIN]:[TMAP_PORT]/get_traffic?t=" + t, true);
     xmlhttp.send(null);
     xmlhttp.onreadystatechange = function () {
         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {

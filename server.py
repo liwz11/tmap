@@ -76,10 +76,12 @@ class MyHandler(BaseHTTPRequestHandler):
 				self.send_header('Content-Type', content_type)
 				self.end_headers()
 
+				global tmap_domain
 				global tmap_addr
 				global tmap_port
 
 				js_text = f.read()
+				js_text = js_text.replace('[TMAP_DOMAIN]', tmap_domain)
 				js_text = js_text.replace('[TMAP_ADDR]', tmap_addr)
 				js_text = js_text.replace('[TMAP_PORT]', str(tmap_port))
 				self.wfile.write(js_text)
@@ -126,57 +128,32 @@ def get_ip(packet):
 	t = packet.time
 	src_ip = packet[IP].src
 	dst_ip = packet[IP].dst
-	headers = '\n'.join(packet.sprintf("{Raw:%Raw.load%}").split(r'\r\n\r\n')[0].split(r"\r\n"))
+	
+	global dst_obj
 
-	v1 = int(socket.inet_aton(src_ip).encode('hex'), 16) & (0xFFFFFFFF << (32 - 20))
-	v2 = int(socket.inet_aton(dst_ip).encode('hex'), 16) & (0xFFFFFFFF << (32 - 20))
-	src_ip_1 = socket.inet_ntoa(struct.pack("!I", v1))
-	dst_ip_1 = socket.inet_ntoa(struct.pack("!I", v2))
-	print(src_ip, src_ip_1, '-->', dst_ip, dst_ip_1)
-	print(headers)
+	if dst_ip == dst_obj['ip']:
+		ip_int = int(socket.inet_aton(src_ip).encode('hex'), 16) & (0xFFFFFFFF << (32 - 20))
+		src_ip_1 = socket.inet_ntoa(struct.pack("!I", ip_int))
+		src_obj = get_json_obj('./data/ip2latlon.json', src_ip_1)
+		src_obj['ip'] = src_ip
+		src_obj['key'] = 'src'
 
-	'''
-	global ip2latlon
+		traffic = { "desc": 'http GET request', "level": 0, "color_idx": 1, "time": t, "dst": src_obj, "src": dst_obj }
 
-	# {"lat":"", "lon":"", "ip":"", "key":""}
-	src_obj = dict()
-	src_obj['lat'] = ip2latlon[src_ip_1][u'x']
-	src_obj['lon'] = ip2latlon[src_ip_1][u'y']
-	src_obj['ip'] = src_ip
-	src_obj['key'] = 'src'
+		global traffic_list
+		global max_size
+		global cur_idx
 
-	dst_obj = dict()
-	dst_obj['lat'] = ip2latlon[dst_ip_1][u'x']
-	dst_obj['lon'] = ip2latlon[dst_ip_1][u'y']
-	dst_obj['ip'] = dst_ip
-	dst_obj['key'] = 'dst'
-	'''
-
-	# {"city":"", "country_code":"", lat":"", "lon":"", "ip":"", "key":""}
-	src_obj = get_json_obj('./data/ip2latlon.json', src_ip_1)
-	src_obj['ip'] = src_ip
-	src_obj['key'] = 'src'
-
-	dst_obj = get_json_obj('./data/ip2latlon.json', dst_ip_1)
-	dst_obj['ip'] = dst_ip
-	dst_obj['key'] = 'dst'
-
-	traffic = { "desc": 'http GET request', "level": 0, "color_idx": 1, "time": t, "dst": src_obj, "src": dst_obj }
-
-	global traffic_list
-	global max_size
-	global cur_idx
-
-	if len(traffic_list) < max_size:
-		traffic_list.append(traffic)
-		cur_idx += 1
-	else:
-		if cur_idx == len(traffic_list) - 1:
-			traffic_list[0] = traffic
-			cur_idx = 0
-		else:
-			traffic_list[cur_idx+1] = traffic
+		if len(traffic_list) < max_size:
+			traffic_list.append(traffic)
 			cur_idx += 1
+		else:
+			if cur_idx == len(traffic_list) - 1:
+				traffic_list[0] = traffic
+				cur_idx = 0
+			else:
+				traffic_list[cur_idx+1] = traffic
+				cur_idx += 1
 
 
 def http_sniffer():
@@ -187,13 +164,18 @@ def http_sniffer():
 
 if __name__ == '__main__':
 	parser = ArgumentParser(description='tmap')
+	parser.add_argument('--domain', default='-', help='the tmap server domain')
 	parser.add_argument('--addr', default='127.0.0.1', help='the tmap server addr')
 	parser.add_argument('--port', default=8888, type=int, help='the tmap server port')
 	parser.add_argument('--iface', default='eth0', help='the sniff interface')
 	args = parser.parse_args()
+	tmap_domain = args.domain
 	tmap_addr = args.addr
 	tmap_port = args.port
 	sniff_iface = args.iface
+
+	if tmap_domain == '-':
+		tmap_domain = tmap_addr
 
 	# 字典极其消耗内存
 	'''
@@ -202,6 +184,12 @@ if __name__ == '__main__':
 	print('read file - ip2latlon.json [finish]')
 	print(ip2latlon['255.255.240.0'])
 	'''
+
+	ip_int = int(socket.inet_aton(tmap_addr).encode('hex'), 16) & (0xFFFFFFFF << (32 - 20))
+	tmap_addr_1 = socket.inet_ntoa(struct.pack("!I", ip_int))
+	dst_obj = get_json_obj('./data/ip2latlon.json', tmap_addr_1)
+	dst_obj['ip'] = tmap_addr
+	dst_obj['key'] = 'dst'
 
 	try:
 		sniffer_thread = threading.Thread(target=http_sniffer, args=())
