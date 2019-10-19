@@ -249,9 +249,7 @@ setInterval(function() {
                 t0 = traffic_list[0]['time']
                 for(var i = 0; i < traffic_list.length; i++) {
                     t1 = traffic_list[i]['time']
-                    setTimeout(function() {
-                        show_traffic(traffic_list[i]);
-                    }, t1-t0);
+                    setTimeout("show_traffic(" + traffic_list[i] + ")", t1-t0);
                 }
             }
         }
