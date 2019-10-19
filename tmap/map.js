@@ -208,7 +208,7 @@ function show_traffic(traffic) {
     }
 
     var impact_radius = () => `${random_range(20, 40) / Math.sqrt(scale)}px`;
-    console.log(traffic.src)
+    //console.log(traffic.src)
     
     var circle = svg.selectAll("circle")
         .data([(traffic.src.ip == target_ip ? traffic.dst : traffic.src)], d => d.key)
@@ -240,7 +240,7 @@ setInterval(function() {
     xmlhttp.onreadystatechange = function () {
         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             res = xmlhttp.responseText;
-            // console.log(res);
+            console.log(res);
 
             var traffic_list = JSON.parse(res);
             if(traffic_list.length > 0) {
