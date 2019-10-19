@@ -246,9 +246,12 @@ setInterval(function() {
             if(traffic_list.length > 0) {
                 t = traffic_list[traffic_list.length - 1]['time'];
 
+                t0 = traffic_list[0]['time']
                 for(var i = 0; i < traffic_list.length; i++) {
-                    show_traffic(traffic_list[i]);
-
+                    t1 = traffic_list[i]['time']
+                    setTimeout(function() {
+                        show_traffic(traffic_list[i]);
+                    }, t1-t0);
                 }
             }
         }
