@@ -248,8 +248,9 @@ setInterval(function() {
 
                 for(var i = 0; i < traffic_list.length; i++) {
                     show_traffic(traffic_list[i]);
+
                 }
             }
         }
     }
-}, 5 * 1000);
+}, [INTERVAL] * 1000);

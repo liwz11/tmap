@@ -79,11 +79,13 @@ class MyHandler(BaseHTTPRequestHandler):
 				global tmap_domain
 				global tmap_addr
 				global tmap_port
+				global interval
 
 				js_text = f.read()
 				js_text = js_text.replace('[TMAP_DOMAIN]', tmap_domain)
 				js_text = js_text.replace('[TMAP_ADDR]', tmap_addr)
 				js_text = js_text.replace('[TMAP_PORT]', str(tmap_port))
+				js_text = js_text.replace('[INTERVAL]', str(interval))
 				self.wfile.write(js_text)
 				f.close()
 			else:
@@ -168,11 +170,13 @@ if __name__ == '__main__':
 	parser.add_argument('--addr', default='127.0.0.1', help='the tmap server addr')
 	parser.add_argument('--port', default=8888, type=int, help='the tmap server port')
 	parser.add_argument('--iface', default='eth0', help='the sniff interface')
+	parser.add_argument('--interval', default=1, type=int, help='the interval to get traffic_list')
 	args = parser.parse_args()
 	tmap_domain = args.domain
 	tmap_addr = args.addr
 	tmap_port = args.port
 	sniff_iface = args.iface
+	interval = args.interval
 
 	if tmap_domain == '-':
 		tmap_domain = tmap_addr
