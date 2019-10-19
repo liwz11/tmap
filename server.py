@@ -116,6 +116,7 @@ def get_ip(packet):
 	src_ip_1 = socket.inet_ntoa(struct.pack("!I", v1))
 	dst_ip_1 = socket.inet_ntoa(struct.pack("!I", v2))
 	print(src_ip, src_ip_1, '-->', dst_ip, dst_ip_1)
+	print(headers.split('\n')[0])
 
 	global ip2latlon
 
