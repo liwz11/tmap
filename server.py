@@ -14,6 +14,8 @@ traffic_list = []
 max_size = 500
 cur_idx = -1
 
+performance = {'ibw':0, 'obw':0, 'conn':0}
+
 
 class MyHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
@@ -64,9 +66,9 @@ class MyHandler(BaseHTTPRequestHandler):
 						i = idx - 1
 						while i >= 0:
 							if t >= traffic_list[i]['time'] or len(res_list) >= 50:
-                                                                print('cur - end - res', idx, i, len(res_list))
-                                                                break
-                                                        res_list.insert(0, traffic_list[i])
+								print('cur - end - res', idx, i, len(res_list))
+								break
+							res_list.insert(0, traffic_list[i])
 							
 							i = i - 1
 
@@ -78,6 +80,7 @@ class MyHandler(BaseHTTPRequestHandler):
 							res_list.insert(0, traffic_list[j])
 							
 							j = j - 1
+				print(performance)
 				self.wfile.write(json.dumps(res_list))
 			elif path == '/map.js':
 				f = open(root_dir + path)
@@ -125,11 +128,14 @@ def read_jsonfile(filepath):
         return None
 
 
+def exec_command(cmd):
+	p = os.popen(cmd)
+	return p.read()
+
+
 def get_json_obj(filepath, key):
     try:
-        p = os.popen("cat " + filepath + " | grep '\"" + key + "\"'")
-        res = p.read()
-
+        res = exec_command("cat " + filepath + " | grep '\"" + key + "\"'")
         for i in range(0, len(res)):
             if res[i] == '{':
                 start = i
@@ -174,11 +180,45 @@ def get_ip(packet):
 				cur_idx += 1
 
 
-def http_sniffer():
-	print('sniff http - GET [start]')
-	global sniff_iface
+def network_monitor():
+	print('network_monitor - [start]')
+
+	global interface
 	global tmap_addr
-	sniff(iface=sniff_iface, prn=get_ip, filter="dst host %s and tcp" % tmap_addr)
+
+	sniff(iface=interface, prn=get_ip, filter="dst host %s and tcp" % tmap_addr)
+
+
+def performance_monitor():
+	print('performance_monitor - [start]')
+
+	global interface
+	global performance
+
+	ibound_cmd = "ifconfig " + interface + " | grep 'bytes' | cut -d ':' -f2 | cut -d ' ' -f1"
+	obound_cmd = "ifconfig " + interface + " | grep 'bytes' | cut -d ':' -f3 | cut -d ' ' -f1"
+	conn_cmd   = "netstat -n | awk '/:80/ {++S[$NF]} END {for(a in S) print a, S[a]}' | grep 'ESTABLISHED' | cut -d ' ' -f2"
+
+	while True:
+		t1 = time.time()
+		ibound_prev = int(exec_command(ibound_cmd))
+		obound_prev = int(exec_command(obound_cmd))
+
+		time.sleep(0.5)
+
+		t2 = time.time()
+		ibound_curr = int(exec_command(ibound_cmd))
+		obound_curr = int(exec_command(obound_cmd))
+
+		res = exec_command(conn_cmd)
+		conn = 0
+		if res != '':
+			conn = int(res)
+
+		ibw = (ibound_curr - ibound_prev) / (t2 - t1)
+		obw = (obound_curr - obound_prev) / (t2 - t1)
+
+		performance['ibw'] = performance = {'ibw':ibw, 'obw':obw, 'conn':conn}
 
 
 if __name__ == '__main__':
@@ -193,7 +233,7 @@ if __name__ == '__main__':
 	tmap_domain = args.domain
 	tmap_addr = args.addr
 	tmap_port = args.port
-	sniff_iface = args.iface
+	interface = args.iface
 	interval = args.interval
 	timeout = args.timeout
 
@@ -215,8 +255,13 @@ if __name__ == '__main__':
 	dst_obj['key'] = 'dst'
 
 	try:
-		sniffer_thread = threading.Thread(target=http_sniffer, args=())
-		sniffer_thread.start()
+		network_monitor_thread = threading.Thread(target=network_monitor, args=())
+		network_monitor_thread.setDaemon(True) # 一旦主线程执行结束，子线程被终止执行
+		network_monitor_thread.start()
+
+		performance_monitor_thread = threading.Thread(target=performance_monitor, args=())
+		performance_monitor_thread.setDaemon(True)
+		performance_monitor_thread.start()
 
 		server = HTTPServer((tmap_addr, tmap_port), MyHandler)
 		print('httpserver on %s:%d' %(tmap_addr, tmap_port), '[start]')
