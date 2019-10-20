@@ -18,8 +18,11 @@ cur_idx = -1
 class MyHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		root_dir = './tmap/'
-		path = self.path.split('?')[0]
-		pram = self.path.split('?')[1]
+		temp = self.path.split('?')
+		path = temp[0]
+		pram = ''
+		if len(temp) > 1:
+			pram = temp[1]
 		try:
 			content_type = 'text/html'
 			if path.endswith('.js'):
@@ -37,8 +40,11 @@ class MyHandler(BaseHTTPRequestHandler):
 				global traffic_list
 				global max_size
 				global cur_idx
-
-				t = float(pram.split('t=')[1])
+				
+				t = 999999999
+				temp = pram.split('t=')
+				if len(temp) > 1:
+					t = float(temp[1])
 				
 				idx = cur_idx
 				res_list = []
