@@ -14,7 +14,7 @@ traffic_list = []
 max_size = 500
 cur_idx = -1
 
-performance = {'ibw':0, 'obw':0, 'conn':0}
+performance = {'bw_unit':'Mbps', 'ibw':0, 'obw':0, 'conn':0}
 
 
 class MyHandler(BaseHTTPRequestHandler):
@@ -124,7 +124,7 @@ def read_jsonfile(filepath):
             data = f.read()
         return json.loads(data)
     except Exception as e:
-        print(str(e))
+        print('Error: [read_jsonfile] ' + str(e))
         return None
 
 
@@ -143,7 +143,7 @@ def get_json_obj(filepath, key):
                 end = i
         return json.loads(res[start:end+1])
     except Exception as e:
-        print(str(e))
+        print('Error: [get_json_obj] ' + str(e))
         return None
 
 
@@ -193,18 +193,19 @@ def performance_monitor():
 	print('performance_monitor - [start]')
 
 	global interface
+	global tmap_addr
 	global performance
 
 	ibound_cmd = "ifconfig " + interface + " | grep 'bytes' | cut -d ':' -f2 | cut -d ' ' -f1"
 	obound_cmd = "ifconfig " + interface + " | grep 'bytes' | cut -d ':' -f3 | cut -d ' ' -f1"
-	conn_cmd   = "netstat -n | awk '/:80/ {++S[$NF]} END {for(a in S) print a, S[a]}' | grep 'ESTABLISHED' | cut -d ' ' -f2"
+	conn_cmd   = "netstat -n | awk '/" + tmap_addr + ":80/ {++S[$NF]} END {for(a in S) print a, S[a]}' | grep 'ESTABLISHED' | cut -d ' ' -f2"
 
 	while True:
 		t1 = time.time()
 		ibound_prev = int(exec_command(ibound_cmd))
 		obound_prev = int(exec_command(obound_cmd))
 
-		time.sleep(0.5)
+		time.sleep(1)
 
 		t2 = time.time()
 		ibound_curr = int(exec_command(ibound_cmd))
@@ -215,10 +216,25 @@ def performance_monitor():
 		if res != '':
 			conn = int(res)
 
-		ibw = (ibound_curr - ibound_prev) / (t2 - t1)
-		obw = (obound_curr - obound_prev) / (t2 - t1)
+		bw_unit = 'Kbps'
+		ibw = (ibound_curr - ibound_prev) * 8 / (t2 - t1) / 1000 #Kbps
+		obw = (obound_curr - obound_prev) * 8 / (t2 - t1) / 1000 #Kbps
 
-		performance['ibw'] = performance = {'ibw':ibw, 'obw':obw, 'conn':conn}
+		if ibw > 1000 or obw > 1000:
+			bw_unit = 'Mbps'
+			ibw = ibw / 1000
+			obw = obw / 1000
+		
+		if ibw > 1:
+			ibw = '%.2f' % ibw
+		else:
+			ibw = '%.2g' % ibw
+		if obw > 1:
+			obw = '%.2f' % obw
+		else:
+			obw = '%.2g' % obw
+
+		performance['ibw'] = performance = {'bw_unit':bw_unit, 'ibw':ibw, 'obw':obw, 'conn':conn}
 
 
 if __name__ == '__main__':

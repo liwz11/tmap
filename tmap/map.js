@@ -244,7 +244,7 @@ setInterval(function() {
     xmlhttp.onreadystatechange = function () {
         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var res = xmlhttp.responseText;
-            //console.log(res);
+            console.log(res);
 
             var traffic_list = JSON.parse(res);
             if(traffic_list.length > 0) {
