@@ -11,7 +11,7 @@ from argparse import ArgumentParser
 
 
 traffic_list = []
-max_size = 2000
+max_size = 1000
 cur_idx = -1
 
 
@@ -59,6 +59,7 @@ class MyHandler(BaseHTTPRequestHandler):
 							if t < traffic_list[i]['time']:
 								res_list.insert(0, traffic_list[i])
 							else:
+								print(idx, i, len(res_list))
 								break
 					else:
 						i = idx - 1
@@ -66,6 +67,7 @@ class MyHandler(BaseHTTPRequestHandler):
 							if t < traffic_list[i]['time']:
 								res_list.insert(0, traffic_list[i])
 							else:
+								print(idx, i, len(res_list), 'full')
 								break
 							i = i - 1
 
@@ -74,6 +76,7 @@ class MyHandler(BaseHTTPRequestHandler):
 							if t < traffic_list[j]['time']:
 								res_list.insert(0, traffic_list[j])
 							else:
+								print(idx, j, len(res_list), 'full')
 								break
 							j = j - 1
 
