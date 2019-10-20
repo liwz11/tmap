@@ -18,16 +18,18 @@ cur_idx = -1
 class MyHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		root_dir = './tmap/'
+		path = self.path.split('?')[0]
+		pram = self.path.split('?')[1]
 		try:
 			content_type = 'text/html'
-			if self.path.endswith('.js'):
+			if path.endswith('.js'):
 				content_type = 'application/javascript'
-			elif self.path.endswith('.css'):
+			elif path.endswith('.css'):
 				content_type = 'text/css'
 
-			if '..' in self.path:
+			if '..' in path:
 				self.send_error(400, 'Bad Request')
-			elif '/get_traffic' in self.path:
+			elif path == '/get_traffic':
 				self.send_response(200)
 				self.send_header('Content-Type', content_type)
 				self.end_headers()
@@ -36,7 +38,7 @@ class MyHandler(BaseHTTPRequestHandler):
 				global max_size
 				global cur_idx
 
-				t = float(self.path.split('t=')[1])
+				t = float(pram.split('t=')[1])
 				
 				idx = cur_idx
 				res_list = []
@@ -70,8 +72,8 @@ class MyHandler(BaseHTTPRequestHandler):
 							j = j - 1
 
 				self.wfile.write(json.dumps(res_list))
-			elif self.path.endswith('/map.js'):
-				f = open(root_dir + self.path)
+			elif path == '/map.js':
+				f = open(root_dir + path)
 				self.send_response(200)
 				self.send_header('Content-Type', content_type)
 				self.end_headers()
@@ -89,14 +91,14 @@ class MyHandler(BaseHTTPRequestHandler):
 				self.wfile.write(js_text)
 				f.close()
 			else:
-				f = open(root_dir + self.path)
+				f = open(root_dir + path)
 				self.send_response(200)
 				self.send_header('Content-Type', content_type)
 				self.end_headers()
 				self.wfile.write(f.read())
 				f.close()
 		except Exception as e:
-			self.send_error(404, 'File Not Found: %s' % self.path)
+			self.send_error(404, 'File Not Found: %s' % path)
 
 
 # 字典极其消耗内存
@@ -162,7 +164,8 @@ def get_ip(packet):
 def http_sniffer():
 	print('sniff http - GET [start]')
 	global sniff_iface
-	sniff(iface=sniff_iface, prn=get_ip, lfilter=lambda p: "GET " in str(p), filter="tcp")
+	global tmap_addr
+	sniff(iface=sniff_iface, prn=get_ip, filter="dst host %s and tcp" % tmap_addr)
 
 
 if __name__ == '__main__':
