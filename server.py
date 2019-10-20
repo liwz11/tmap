@@ -11,7 +11,7 @@ from argparse import ArgumentParser
 
 
 traffic_list = []
-max_size = 1000
+max_size = 500
 cur_idx = -1
 
 
@@ -56,30 +56,28 @@ class MyHandler(BaseHTTPRequestHandler):
 
 					if len(traffic_list) < max_size:
 						for i in range(idx-1, -1, -1):
-							if t < traffic_list[i]['time']:
-								res_list.insert(0, traffic_list[i])
-							else:
-								print(idx, i, len(res_list))
+							if t >= traffic_list[i]['time'] or len(res_list) >= 50:
+								print('cur - end - res', idx, i, len(res_list))
 								break
+							res_list.insert(0, traffic_list[i])
 					else:
 						i = idx - 1
 						while i >= 0:
-							if t < traffic_list[i]['time']:
-								res_list.insert(0, traffic_list[i])
-							else:
-								print(idx, i, len(res_list), 'full')
-								break
+							if t >= traffic_list[i]['time'] or len(res_list) >= 50:
+                                                                print('cur - end - res', idx, i, len(res_list))
+                                                                break
+                                                        res_list.insert(0, traffic_list[i])
+							
 							i = i - 1
 
 						j = len(traffic_list) - 1
 						while i == -1 and j >= 0:
-							if t < traffic_list[j]['time']:
-								res_list.insert(0, traffic_list[j])
-							else:
-								print(idx, j, len(res_list), 'full')
+							if t >= traffic_list[j]['time'] or len(res_list) >= 50:
+								print('cur - end - res', idx, j, len(res_list))
 								break
+							res_list.insert(0, traffic_list[j])
+							
 							j = j - 1
-
 				self.wfile.write(json.dumps(res_list))
 			elif path == '/map.js':
 				f = open(root_dir + path)
@@ -91,12 +89,14 @@ class MyHandler(BaseHTTPRequestHandler):
 				global tmap_addr
 				global tmap_port
 				global interval
+				global timeout
 
 				js_text = f.read()
 				js_text = js_text.replace('[TMAP_DOMAIN]', tmap_domain)
 				js_text = js_text.replace('[TMAP_ADDR]', tmap_addr)
 				js_text = js_text.replace('[TMAP_PORT]', str(tmap_port))
 				js_text = js_text.replace('[INTERVAL]', str(interval))
+				js_text = js_text.replace('[TIMEOUT]', str(timeout))
 				self.wfile.write(js_text)
 				f.close()
 			else:
@@ -107,7 +107,11 @@ class MyHandler(BaseHTTPRequestHandler):
 				self.wfile.write(f.read())
 				f.close()
 		except Exception as e:
-			self.send_error(404, 'File Not Found: %s' % path)
+			print('Error:', str(e))
+			if 'Broken pipe' not in str(e):
+				self.send_error(404, 'File Not Found: %s' % path)
+			else:
+				print('Debug: Connection reset by peer.')
 
 
 # 字典极其消耗内存
@@ -183,13 +187,15 @@ if __name__ == '__main__':
 	parser.add_argument('--addr', default='127.0.0.1', help='the tmap server addr')
 	parser.add_argument('--port', default=8888, type=int, help='the tmap server port')
 	parser.add_argument('--iface', default='eth0', help='the sniff interface')
-	parser.add_argument('--interval', default=2, type=int, help='the interval to get traffic_list')
+	parser.add_argument('--interval', default=1, type=int, help='the interval to get traffic in map.js')
+	parser.add_argument('--timeout', default=5, type=int, help='the timeout to get traffic in map.js')
 	args = parser.parse_args()
 	tmap_domain = args.domain
 	tmap_addr = args.addr
 	tmap_port = args.port
 	sniff_iface = args.iface
 	interval = args.interval
+	timeout = args.timeout
 
 	if tmap_domain == '-':
 		tmap_domain = tmap_addr

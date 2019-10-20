@@ -239,7 +239,7 @@ var t = 0
 setInterval(function() {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", "http://[TMAP_DOMAIN]:[TMAP_PORT]/get_traffic?t=" + t, true);
-    xmlhttp.timeout = 5 * 1000;
+    xmlhttp.timeout = [TIMEOUT] * 1000;
     xmlhttp.send(null);
     xmlhttp.onreadystatechange = function () {
         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
