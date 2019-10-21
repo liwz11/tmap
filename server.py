@@ -131,7 +131,7 @@ def read_jsonfile(filepath):
 
 def popen_command(command):
     try:
-    	print('command: %s' command)
+        print('command: %s' command)
         p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, error = p.communicate()
         print('output: ++%s++' output.strip())
