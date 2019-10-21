@@ -235,7 +235,39 @@ function show_traffic(traffic) {
         .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 }
 
-var t = 0
+var t = 0;
+get_traffic();
+
+function get_traffic() {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("GET", "http://[TMAP_DOMAIN]:[TMAP_PORT]/get_traffic?t=" + t, true);
+    xmlhttp.timeout = [TIMEOUT] * 1000;
+    xmlhttp.send(null);
+    xmlhttp.onreadystatechange = function () {
+        if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            var res = xmlhttp.responseText;
+            console.log(res);
+
+            var traffic_list = JSON.parse(res);
+            if(traffic_list.length > 0) {
+                t = traffic_list[traffic_list.length - 1]['time'];
+
+                var t0 = traffic_list[0]['time'];
+                for(var i = 0; i < traffic_list.length; i++) {
+                    var t1 = traffic_list[i]['time'];
+                    setTimeout((function(traffic) {
+                        //console.log(traffic.dst);
+                        show_traffic(traffic);
+                    })(traffic_list[i]), t1 - t0);
+                }
+            }
+        }
+
+        get_traffic();
+    }
+}
+
+/*
 setInterval(function() {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", "http://[TMAP_DOMAIN]:[TMAP_PORT]/get_traffic?t=" + t, true);
@@ -262,3 +294,4 @@ setInterval(function() {
         }
     }
 }, [INTERVAL] * 1000);
+*/
