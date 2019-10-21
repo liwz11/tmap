@@ -212,7 +212,6 @@ def performance_monitor():
 	conn_cmd   = "netstat -n | awk '/" + tmap_addr + ":80/ {++S[$NF]} END {for(a in S) print a, S[a]}' | grep 'ESTABLISHED' | cut -d ' ' -f2"
 
 	while True:
-		try:
 		t1 = time.time()
 		ibound_prev = int(popen_command(ibound_cmd))
 		obound_prev = int(popen_command(obound_cmd))
