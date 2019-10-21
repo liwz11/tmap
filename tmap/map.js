@@ -263,7 +263,7 @@ function get_traffic() {
             }
         }
 
-        get_traffic();
+        setTimeout("get_traffic()", [INTERVAL] * 1000);
     }
 }
 
