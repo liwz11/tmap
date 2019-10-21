@@ -50,9 +50,10 @@ class MyHandler(BaseHTTPRequestHandler):
 				
 				idx = cur_idx
 				res_list = []
-				if t == 0.0:
-					if idx != -1:
-						res_list.append(traffic_list[idx])
+				if idx == -1:
+					pass
+				elif t == 0.0:
+					res_list.append(traffic_list[idx])
 				elif t < traffic_list[idx]['time']:
 					res_list.append(traffic_list[idx])
 
@@ -246,12 +247,12 @@ def performance_monitor():
 
 if __name__ == '__main__':
 	parser = ArgumentParser(description='tmap')
-	parser.add_argument('--domain', default='-', help='the tmap server domain')
-	parser.add_argument('--addr', default='127.0.0.1', help='the tmap server addr')
-	parser.add_argument('--port', default=8888, type=int, help='the tmap server port')
-	parser.add_argument('--iface', default='eth0', help='the sniff interface')
-	parser.add_argument('--interval', default=1, type=int, help='the interval to get traffic in map.js')
-	parser.add_argument('--timeout', default=5, type=int, help='the timeout to get traffic in map.js')
+	parser.add_argument('--domain', default='-', help='the tmap server domain, default \'-\'')
+	parser.add_argument('--addr', default='127.0.0.1', help='the tmap server addr, default \'127.0.0.1\'')
+	parser.add_argument('--port', default=8888, type=int, help='the tmap server port, default 8888')
+	parser.add_argument('--iface', default='eth0', help='the sniff interface, default \'eth0\'')
+	parser.add_argument('--interval', default=1, type=int, help='the interval to get traffic in map.js, default 1')
+	parser.add_argument('--timeout', default=5, type=int, help='the timeout to get traffic in map.js, default 5')
 	args = parser.parse_args()
 	tmap_domain = args.domain
 	tmap_addr = args.addr
