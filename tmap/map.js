@@ -262,7 +262,7 @@ function get_traffic() {
         }
     }
 
-    xmlhttp.open("GET", "http://[TMAP_DOMAIN]:[TMAP_PORT]/get_traffic?t=" + t, false);
+    xmlhttp.open("GET", "http://[TMAP_DOMAIN]:[TMAP_PORT]/get_traffic?t=" + t, true);
     xmlhttp.timeout = [TIMEOUT] * 1000;
     xmlhttp.send(null);
 
