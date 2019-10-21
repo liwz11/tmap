@@ -40,7 +40,7 @@ if __name__ == '__main__':
 		if country_id in id2name:
 			country_name = id2name[country_id]
 		
-		world['objects']['countries']['geometries'][i]['name'] = country_name
+		world['objects']['countries']['geometries'][i]['properties'] = {'name':country_name}
 
 		if 'taiwan' in country_name.lower():
 			print('taiwan id: %s' % country_id)
