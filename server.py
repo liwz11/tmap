@@ -228,7 +228,7 @@ def performance_monitor():
 			continue
 
 		conn = 0
-		if res != '':
+		if conn_curr != '':
 			conn = int(conn_curr)
 
 		bw_unit = 'Kbps'
