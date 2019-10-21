@@ -11,7 +11,7 @@ from argparse import ArgumentParser
 
 
 traffic_list = []
-max_size = 500
+max_size = 1500
 cur_idx = -1
 
 performance = {'bw_unit':'Mbps', 'ibw':0, 'obw':0, 'conn':0}
@@ -59,14 +59,14 @@ class MyHandler(BaseHTTPRequestHandler):
 
 					if len(traffic_list) < max_size:
 						for i in range(idx-1, -1, -1):
-							if t >= traffic_list[i]['time'] or len(res_list) >= 50:
+							if t >= traffic_list[i]['time'] or len(res_list) >= 100:
 								print('cur - end - res', idx, i, len(res_list))
 								break
 							res_list.insert(0, traffic_list[i])
 					else:
 						i = idx - 1
 						while i >= 0:
-							if t >= traffic_list[i]['time'] or len(res_list) >= 50:
+							if t >= traffic_list[i]['time'] or len(res_list) >= 100:
 								print('cur - end - res', idx, i, len(res_list))
 								break
 							res_list.insert(0, traffic_list[i])
@@ -75,7 +75,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
 						j = len(traffic_list) - 1
 						while i == -1 and j >= 0:
-							if t >= traffic_list[j]['time'] or len(res_list) >= 50:
+							if t >= traffic_list[j]['time'] or len(res_list) >= 100:
 								print('cur - end - res', idx, j, len(res_list))
 								break
 							res_list.insert(0, traffic_list[j])
