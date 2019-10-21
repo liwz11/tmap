@@ -113,7 +113,7 @@ window.onresize = function() {
 var g = svg.append("g");
 
 // draw map
-d3.json("data/world-110m.json", (error, world) => {
+d3.json("data/world-110m-with-names.json", (error, world) => {
     if (error) throw error;
 
     //countries
