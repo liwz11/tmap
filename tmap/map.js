@@ -240,9 +240,7 @@ get_traffic();
 
 function get_traffic() {
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET", "http://[TMAP_DOMAIN]:[TMAP_PORT]/get_traffic?t=" + t, true);
-    xmlhttp.timeout = [TIMEOUT] * 1000;
-    xmlhttp.send(null);
+
     xmlhttp.onreadystatechange = function () {
         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var res = xmlhttp.responseText;
@@ -267,6 +265,10 @@ function get_traffic() {
             get_traffic();
         }, [INTERVAL] * 1000);
     }
+
+    xmlhttp.open("GET", "http://[TMAP_DOMAIN]:[TMAP_PORT]/get_traffic?t=" + t, false);
+    xmlhttp.timeout = [TIMEOUT] * 1000;
+    xmlhttp.send(null);
 }
 
 /*
