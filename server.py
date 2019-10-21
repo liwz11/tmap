@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 
-import os, time, threading, json
+import os, time, threading, json, subprocess
 import socket, struct
 from datetime import datetime
 from scapy.all import *
@@ -128,14 +128,21 @@ def read_jsonfile(filepath):
         return None
 
 
-def exec_command(cmd):
-	p = os.popen(cmd)
-	return p.read()
+def popen_command(command):
+    try:
+        p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error = p.communicate()
+        return output.strip()
+    except Exception as e:
+        print('Error: [popen_command] ' + str(e))
+        print('Command: ' + command)
+        return None
 
 
 def get_json_obj(filepath, key):
     try:
-        res = exec_command("cat " + filepath + " | grep '\"" + key + "\"'")
+        res = popen_command("cat " + filepath + " | grep '\"" + key + "\"'")
+
         for i in range(0, len(res)):
             if res[i] == '{':
                 start = i
@@ -202,16 +209,16 @@ def performance_monitor():
 
 	while True:
 		t1 = time.time()
-		ibound_prev = int(exec_command(ibound_cmd))
-		obound_prev = int(exec_command(obound_cmd))
+		ibound_prev = int(popen_command(ibound_cmd))
+		obound_prev = int(popen_command(obound_cmd))
 
 		time.sleep(1)
 
 		t2 = time.time()
-		ibound_curr = int(exec_command(ibound_cmd))
-		obound_curr = int(exec_command(obound_cmd))
+		ibound_curr = int(popen_command(ibound_cmd))
+		obound_curr = int(popen_command(obound_cmd))
 
-		res = exec_command(conn_cmd)
+		res = popen_command(conn_cmd)
 		conn = 0
 		if res != '':
 			conn = int(res)
