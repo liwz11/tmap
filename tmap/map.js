@@ -263,7 +263,9 @@ function get_traffic() {
             }
         }
 
-        setTimeout("get_traffic()", [INTERVAL] * 1000);
+        setTimeout(function() {
+            get_traffic();
+        }, [INTERVAL] * 1000);
     }
 }
 
