@@ -59,14 +59,14 @@ class MyHandler(BaseHTTPRequestHandler):
 
 					if len(traffic_list) < max_size:
 						for i in range(idx-1, -1, -1):
-							if t >= traffic_list[i]['time'] or len(res_list) >= 20:
+							if t >= traffic_list[i]['time'] or len(res_list) >= 35:
 								print('cur - end - res', idx, i, len(res_list))
 								break
 							res_list.insert(0, traffic_list[i])
 					else:
 						i = idx - 1
 						while i >= 0:
-							if t >= traffic_list[i]['time'] or len(res_list) >= 20:
+							if t >= traffic_list[i]['time'] or len(res_list) >= 35:
 								print('cur - end - res', idx, i, len(res_list))
 								break
 							res_list.insert(0, traffic_list[i])
@@ -75,7 +75,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
 						j = len(traffic_list) - 1
 						while i == -1 and j >= 0:
-							if t >= traffic_list[j]['time'] or len(res_list) >= 20:
+							if t >= traffic_list[j]['time'] or len(res_list) >= 35:
 								print('cur - end - res', idx, j, len(res_list))
 								break
 							res_list.insert(0, traffic_list[j])
@@ -166,6 +166,9 @@ def get_ip(packet):
 		ip_int = int(socket.inet_aton(src_ip).encode('hex'), 16) & (0xFFFFFFFF << (32 - 20))
 		src_ip_1 = socket.inet_ntoa(struct.pack("!I", ip_int))
 		src_obj = get_json_obj('./data/ip2latlon.json', src_ip_1)
+		if src_obj == None:
+			return
+
 		src_obj['ip'] = src_ip
 		src_obj['key'] = 'src-' + str(t) # 这里的key非常重要，一定要保证都不一样
 		#print(src_obj)
@@ -209,6 +212,7 @@ def performance_monitor():
 	conn_cmd   = "netstat -n | awk '/" + tmap_addr + ":80/ {++S[$NF]} END {for(a in S) print a, S[a]}' | grep 'ESTABLISHED' | cut -d ' ' -f2"
 
 	while True:
+		try:
 		t1 = time.time()
 		ibound_prev = int(popen_command(ibound_cmd))
 		obound_prev = int(popen_command(obound_cmd))
@@ -219,10 +223,14 @@ def performance_monitor():
 		ibound_curr = int(popen_command(ibound_cmd))
 		obound_curr = int(popen_command(obound_cmd))
 
-		res = popen_command(conn_cmd)
+		conn_curr = popen_command(conn_cmd)
+
+		if ibound_prev == None or obound_prev == None or ibound_curr == None or obound_curr == None or conn_curr == None:
+			continue
+
 		conn = 0
 		if res != '':
-			conn = int(res)
+			conn = int(conn_curr)
 
 		bw_unit = 'Kbps'
 		ibw = (ibound_curr - ibound_prev) * 8 / (t2 - t1) / 1000 #Kbps
