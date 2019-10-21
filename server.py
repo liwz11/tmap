@@ -143,6 +143,8 @@ def popen_command(command):
 def get_json_obj(filepath, key):
     try:
         res = popen_command("cat " + filepath + " | grep '\"" + key + "\"'")
+        if res == None:
+        	return None
 
         for i in range(0, len(res)):
             if res[i] == '{':
