@@ -260,15 +260,15 @@ function get_traffic() {
                 }
             }
         }
-
-        setTimeout(function() {
-            get_traffic();
-        }, [INTERVAL] * 1000);
     }
 
     xmlhttp.open("GET", "http://[TMAP_DOMAIN]:[TMAP_PORT]/get_traffic?t=" + t, false);
     xmlhttp.timeout = [TIMEOUT] * 1000;
     xmlhttp.send(null);
+
+    setTimeout(function() {
+        get_traffic();
+    }, [INTERVAL] * 1000);
 }
 
 /*
