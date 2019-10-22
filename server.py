@@ -301,6 +301,7 @@ if __name__ == '__main__':
 		performance_monitor_thread.start()
 
 		server = HTTPServer((tmap_addr, tmap_port), MyHandler)
+		server.timeout = 2 # avoid request timeout
 		print('httpserver on %s:%d' %(tmap_addr, tmap_port), '[start]')
 		server.serve_forever()
 	except Exception as e:
