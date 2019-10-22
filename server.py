@@ -109,6 +109,20 @@ class MyHandler(BaseHTTPRequestHandler):
 				js_text = js_text.replace('[TIMEOUT]', str(timeout))
 				self.wfile.write(js_text)
 				f.close()
+			elif path == '/test':
+				cookie = self.headers.getheader('cookie')
+
+				js_text = "<script>var _0x49a6=['wyeCN','4|2|0|3|1','wQzOV','split','iTyzs','pCQRM','cookie','location.href=location.href.replace(/[?|&]tads/,\\x20\\x27\\x27)','WTKkN','bOYDu','dtzqS'];(function(a,c){var b=function(b){while(--b){a['push'](a['shift']());}};b(++c);}(_0x49a6,0x147));var _0x649a=function(a,c){a=a-0x0;var b=_0x49a6[a];return b;};function a(){var a={'WTKkN':55352350,'bOYDu':1082309135,'dtzqS':function d(a,b){return a+b;},'wyeCN':255736740,'pCQRM':function e(a){return a();}};var b=0x0;b+=a[_0x649a('0x0')];b+=a[_0x649a('0x1')];b=a[_0x649a('0x2')](b,a[_0x649a('0x3')]);function c(){var b={'wQzOV':_0x649a('0x4'),'iTyzs':function e(a,b){return a+b;}};var c=b[_0x649a('0x5')][_0x649a('0x6')]('|'),d=0x0;while(!![]){switch(c[d++]){case'0':a+=0xd9;continue;case'1':return a;continue;case'2':a+=0xa4;continue;case'3':a=b[_0x649a('0x7')](a,0x1c0);continue;case'4':var a=0x0;continue;}break;}}return a[_0x649a('0x8')](c),b;}document[_0x649a('0x9')]='__tst_status='+a()+'#;';setTimeout(_0x649a('0xa'),0x4b0);</script> "
+				if cookie != None:
+					js_text = 'You got it!'
+				
+				self.protocol_version = 'HTTP/1.1'
+				self.send_response(200)
+				self.send_header('Content-Type', content_type)
+				self.send_header('Set-Cookie', 'path=/')
+				self.send_header('Content-Length', len(js_text))
+				self.end_headers()
+				self.wfile.write(js_text)
 			else:
 				f = open(root_dir + path)
 				self.send_response(200)
