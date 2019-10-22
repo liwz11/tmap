@@ -19,7 +19,7 @@ performance = {'bw_unit':'Mbps', 'ibw':0, 'obw':0, 'conn':0}
 
 class MyHandler(BaseHTTPRequestHandler):
 	def setup(self):
-		self.timeout = 2 # avoid request timeout
+		self.timeout = 3 # avoid request timeout
 		BaseHTTPRequestHandler.setup(self)
 	
 	def do_GET(self):
