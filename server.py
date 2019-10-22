@@ -19,7 +19,7 @@ performance = {'bw_unit':'Mbps', 'ibw':0, 'obw':0, 'conn':0}
 
 class MyHandler(BaseHTTPRequestHandler):
 	def setup(self):
-		self.timeout = 3 # avoid request timeout
+		self.timeout = 2 # avoid request timeout. it works! short timeout as there is only 1 thread
 		BaseHTTPRequestHandler.setup(self)
 	
 	def do_GET(self):
@@ -122,6 +122,12 @@ class MyHandler(BaseHTTPRequestHandler):
 				self.send_error(404, 'File Not Found: %s' % path)
 			else:
 				print('Debug: Connection reset by peer.')
+
+# 可用于替代HTTPServer
+class TimeoutingHTTPServer(HTTPServer):
+	def finish_request(self, request, client_address):
+		request.settimeout(3) # Really short timeout as there is only 1 thread
+		HTTPServer.finish_request(self, request, client_address)
 
 
 # 字典极其消耗内存
