@@ -18,6 +18,10 @@ performance = {'bw_unit':'Mbps', 'ibw':0, 'obw':0, 'conn':0}
 
 
 class MyHandler(BaseHTTPRequestHandler):
+	def setup(self):
+		self.timeout = 2 # avoid request timeout
+		BaseHTTPRequestHandler.setup(self)
+	
 	def do_GET(self):
 		root_dir = './tmap/'
 		temp = self.path.split('?')
@@ -301,7 +305,7 @@ if __name__ == '__main__':
 		performance_monitor_thread.start()
 
 		server = HTTPServer((tmap_addr, tmap_port), MyHandler)
-		server.timeout = 2 # avoid request timeout
+		#server.timeout = 2 # avoid request timeout, but an invalid method
 		print('httpserver on %s:%d' %(tmap_addr, tmap_port), '[start]')
 		server.serve_forever()
 	except Exception as e:
