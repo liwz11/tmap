@@ -280,6 +280,7 @@ def performance_monitor():
 			obw = '%.2g' % obw
 
 		performance = {'bw_unit':bw_unit, 'ibw':ibw, 'obw':obw, 'conn':conn}
+		print(performance)
 
 
 if __name__ == '__main__':
