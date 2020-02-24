@@ -279,7 +279,7 @@ def performance_monitor():
 		else:
 			obw = '%.2g' % obw
 
-		performance['ibw'] = performance = {'bw_unit':bw_unit, 'ibw':ibw, 'obw':obw, 'conn':conn}
+		performance = {'bw_unit':bw_unit, 'ibw':ibw, 'obw':obw, 'conn':conn}
 
 
 if __name__ == '__main__':
